@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #161525;
+  --muted: #5f5f69;
+  --brand: #4f46e5;
+  --subtle: #f7f6f4;
+  --surface: #ffffff;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+html {
+  scroll-behavior: smooth;
+}
