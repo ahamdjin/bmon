@@ -830,7 +830,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     margin: 0 auto;
   }
 
-  #book-demo .bmon-contact-section {
+  #book-demo .contact-section {
     width: 100%;
     padding: 28px 22px;
     border-radius: 24px;
@@ -840,35 +840,37 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     container-type: inline-size;
   }
 
-  #book-demo .bmon-contact-grid {
+  #book-demo .contact-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
   }
 
   @container (min-width: 920px) {
-    #book-demo .bmon-contact-grid {
+    #book-demo .contact-grid {
       grid-template-columns: 1fr 1fr;
     }
   }
 
-  #book-demo .bmon-contact-card h3 {
+  #book-demo .contact-form h3,
+  #book-demo .calendar-embed h3 {
     margin: 0 0 12px;
   }
 
-  #book-demo .bmon-contact-card iframe {
+  #book-demo .contact-form iframe,
+  #book-demo .calendar-embed iframe {
     display: block;
     width: 100%;
     border: none;
   }
 
-  #book-demo .bmon-contact-card--form iframe {
+  #book-demo .contact-form iframe {
     min-height: var(--bmon-contact-form-min-height);
     height: var(--bmon-contact-form-min-height);
     border-radius: 3px;
   }
 
-  #book-demo .bmon-contact-card--booking iframe {
+  #book-demo .calendar-embed iframe {
     min-height: var(--bmon-contact-booking-min-height);
     border-radius: 3px;
     overflow: hidden;
@@ -879,7 +881,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       --bmon-contact-booking-min-height: 1200px;
     }
 
-    #book-demo .bmon-contact-section {
+    #book-demo .contact-section {
       padding: 22px 16px;
       border-radius: 18px;
     }
@@ -912,16 +914,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     section.setAttribute("data-bmon-contact", "1");
 
     const container = document.createElement("div");
-    container.className = "bmon-contact-section";
+    container.className = "contact-section";
     container.innerHTML = `
-      <h2 style="text-align:center; margin:0 0 24px;">Get Started</h2>
+      <h2 style="text-align:center; margin-bottom:2rem;">Get Started</h2>
 
-      <div class="bmon-contact-grid">
-        <div class="bmon-contact-card bmon-contact-card--form">
+      <div class="contact-grid">
+        <div class="contact-form">
           <h3 style="margin-bottom:1rem;">Contact Us</h3>
           <iframe
             src="https://links.bmon.ai/widget/form/NY32xCQFLTPaQZayLcny"
-            style="width:100%;border:none;border-radius:3px"
+            style="width:100%;height:100%;border:none;border-radius:3px"
             id="inline-NY32xCQFLTPaQZayLcny"
             data-layout='{"id":"INLINE"}'
             data-trigger-type="alwaysShow"
@@ -939,11 +941,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
 
-        <div class="bmon-contact-card bmon-contact-card--booking">
+        <div class="calendar-embed">
           <h3 style="margin-bottom:1rem;">Book a Call</h3>
           <iframe
             src="https://links.bmon.ai/widget/booking/gEVDq9hfE7hZU8XvE1zY"
-            style="width:100%;border:none;overflow:hidden;"
+            style="width: 100%;border:none;overflow: hidden;"
             scrolling="no"
             id="${bookingIframeId}"
             title="Book a Call"
