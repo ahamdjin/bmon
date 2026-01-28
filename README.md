@@ -6,7 +6,7 @@ This repo serves the exact Framer-exported `public/index.html` through a tiny Ne
 
 - `public/index.html` is the source of truth (served as-is).
 - `middleware.js` rewrites all non-asset routes (e.g. `/pricing`) to `/index.html`.
-- `pages/index.js` exists only so Next.js has a `pages/` directory and can build.
+- `pages/[[...path]].js` is a fallback that serves `public/index.html` for any route (so you never see a Next.js 404).
 
 ### Local dev
 
