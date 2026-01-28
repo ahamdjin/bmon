@@ -1,0 +1,9 @@
+{
+  "name": "bmon-static",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "vercel-build": "echo \"Static site: no build step\"",
+    "build": "echo \"Static site: no build step\""
+  }
+}
