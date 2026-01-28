@@ -45,21 +45,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <!-- End of headStart -->
     <meta name="viewport" content="width=device-width">
     <meta name="generator" content="Framer 4255370">
-    <title>Madison AI - Your Digital Marketing Specialist</title>
-    <meta name="description" content="AI-Powered Digital Marketing Platform for Local Businesses - Helping them rank higher on Google, grow their social media presence, and improve and protect their online reputation. ">
+    <title>BMON — Marketing Automation for Local Growth</title>
+    <meta name="description" content="BMON helps local businesses get found, get chosen, and get booked — SEO, reviews, social, and automation in one growth system.">
     <meta name="framer-search-index" content="https://framerusercontent.com/sites/1wG3pL3yA60jrgjGhyCVjS/searchIndex-rfJEvoqMOoaH.json">
     <meta name="framer-search-index-fallback" content="https://framerusercontent.com/sites/1wG3pL3yA60jrgjGhyCVjS/searchIndex-Kb98yMtMgh85.json">
     <link href="https://framerusercontent.com/images/RcAyYj17HPunYbaVd0SwI1bMc.png" rel="icon" media="(prefers-color-scheme: light)">
     <link href="https://framerusercontent.com/images/RcAyYj17HPunYbaVd0SwI1bMc.png" rel="icon" media="(prefers-color-scheme: dark)">
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Madison AI - Your Digital Marketing Specialist">
-    <meta property="og:description" content="AI-Powered Digital Marketing Platform for Local Businesses - Helping them rank higher on Google, grow their social media presence, and improve and protect their online reputation. ">
+    <meta property="og:title" content="BMON — Marketing Automation for Local Growth">
+    <meta property="og:description" content="BMON helps local businesses get found, get chosen, and get booked — SEO, reviews, social, and automation in one growth system.">
     <meta property="og:image" content="https://framerusercontent.com/images/Mj5jo0zJMGz2VMLhxXbJZbS5ujk.png">
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Madison AI - Your Digital Marketing Specialist">
-    <meta name="twitter:description" content="AI-Powered Digital Marketing Platform for Local Businesses - Helping them rank higher on Google, grow their social media presence, and improve and protect their online reputation. ">
+    <meta name="twitter:title" content="BMON — Marketing Automation for Local Growth">
+    <meta name="twitter:description" content="BMON helps local businesses get found, get chosen, and get booked — SEO, reviews, social, and automation in one growth system.">
     <meta name="twitter:image" content="https://framerusercontent.com/images/Mj5jo0zJMGz2VMLhxXbJZbS5ujk.png">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -693,7 +693,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 (function () {
   // --- CONFIG -------------------------------------------------
   const PERSIST_KEY = "madison_attrib";
-  const LINK_SELECTOR = 'a[href*="app.meetmadison.ai"], a[href="/register"], a[href^="/register"]';
+  const LINK_SELECTOR = 'a[href*="links.bmon.ai/widget/booking/"]';
   const TTL_DAYS = 90; // adjust to your attribution window
   // ------------------------------------------------------------
 
@@ -804,6 +804,325 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </script>
 
 <!-- SnippetEnd: legacy-bodyEnd -->
+
+<!-- Snippet: bmon-booking-embed -->
+<style>
+  #book-demo .framer-1drel74 {
+    height: auto !important;
+    min-height: 720px;
+    overflow: visible !important;
+  }
+
+  #book-demo .framer-xi24iv-container {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  #book-demo .bmon-booking-embed {
+    width: 100%;
+  }
+
+  #book-demo .bmon-booking-embed iframe {
+    display: block;
+    width: 100%;
+    min-height: 720px;
+    border: 0;
+    overflow: hidden;
+  }
+
+  @media (max-width: 767.98px) {
+    #book-demo .bmon-booking-embed iframe {
+      min-height: 820px;
+    }
+  }
+</style>
+<script>
+(() => {
+  const BOOKING_ID = "gEVDq9hfE7hZU8XvE1zY";
+  const IFRAME_SRC_BASE = `https://links.bmon.ai/widget/booking/${BOOKING_ID}`;
+  const EMBED_SCRIPT_SRC = "https://links.bmon.ai/js/form_embed.js";
+
+  function getPersistedAttribution() {
+    try {
+      const raw = localStorage.getItem("madison_attrib");
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return {};
+      return parsed;
+    } catch {
+      return {};
+    }
+  }
+
+  function buildIframeSrc() {
+    const url = new URL(IFRAME_SRC_BASE);
+    const params = new URLSearchParams(window.location.search);
+    const persisted = getPersistedAttribution();
+
+    for (const [k, v] of Object.entries(persisted)) {
+      if (params.has(k)) continue;
+      if (typeof v !== "string" || !v) continue;
+      params.set(k, v);
+    }
+
+    url.search = params.toString();
+    return url.toString();
+  }
+
+  function ensureEmbedScript() {
+    const existing = document.querySelector(`script[src="${EMBED_SCRIPT_SRC}"]`);
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = EMBED_SCRIPT_SRC;
+    script.async = true;
+    script.type = "text/javascript";
+    document.body.appendChild(script);
+  }
+
+  function mountBooking() {
+    const cta = document.getElementById("book-demo");
+    if (!cta) return;
+
+    const container = cta.querySelector(".framer-xi24iv-container");
+    if (!container) return;
+    if (container.querySelector('[data-bmon-booking="1"]')) return;
+
+    while (container.firstChild) container.removeChild(container.firstChild);
+
+    const wrap = document.createElement("div");
+    wrap.className = "bmon-booking-embed";
+    wrap.setAttribute("data-bmon-booking", "1");
+
+    const iframe = document.createElement("iframe");
+    iframe.src = buildIframeSrc();
+    iframe.id = `${BOOKING_ID}_${Date.now()}`;
+    iframe.title = "Book a strategy call";
+    iframe.loading = "lazy";
+    iframe.scrolling = "no";
+    iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+    iframe.style.width = "100%";
+    iframe.style.border = "none";
+    iframe.style.overflow = "hidden";
+    iframe.style.minHeight = "720px";
+
+    wrap.appendChild(iframe);
+    container.appendChild(wrap);
+
+    ensureEmbedScript();
+  }
+
+  // Run immediately (we're at the end of <body>, so the CTA DOM already exists).
+  mountBooking();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mountBooking, { once: true });
+  }
+
+  const debounce = (fn, ms) => {
+    let t;
+    return () => {
+      clearTimeout(t);
+      t = setTimeout(fn, ms);
+    };
+  };
+
+  new MutationObserver(debounce(mountBooking, 120)).observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+})();
+</script>
+<!-- SnippetEnd: bmon-booking-embed -->
+
+<!-- Snippet: bmon-content -->
+<script>
+(() => {
+  const BOOKING_URL = "https://links.bmon.ai/widget/booking/gEVDq9hfE7hZU8XvE1zY";
+
+  function updateMeta() {
+    const title = "BMON — AI Marketing Automation for Local Businesses";
+    const description =
+      "BMON helps local businesses rank higher on Google, collect 5-star reviews, and turn leads into booked appointments with automated marketing.";
+
+    if (document.title) document.title = title;
+
+    const setMeta = (selector, value) => {
+      const el = document.querySelector(selector);
+      if (el) el.setAttribute("content", value);
+    };
+
+    setMeta('meta[name="description"]', description);
+    setMeta('meta[property="og:title"]', title);
+    setMeta('meta[property="og:description"]', description);
+    setMeta('meta[name="twitter:title"]', title);
+    setMeta('meta[name="twitter:description"]', description);
+  }
+
+  function updateCanonicalAndOgUrl() {
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute("href", `${window.location.origin}${window.location.pathname}`);
+
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute("content", window.location.href);
+  }
+
+  function rewriteLinks() {
+    document.querySelectorAll("a[href]").forEach((a) => {
+      const href = a.getAttribute("href");
+      if (!href) return;
+
+      // Normalize Framer relative links so they work from nested routes (e.g. /features/*)
+      if (href.startsWith("./")) {
+        a.setAttribute("href", href.replace(/^\.\//, "/"));
+      }
+
+      if (href.includes("app.meetmadison.ai")) {
+        a.setAttribute("href", BOOKING_URL);
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener");
+        a.dataset.bmonCta = "1";
+        return;
+      }
+
+      if (href.includes("meetmadison.ai")) {
+        a.setAttribute("href", BOOKING_URL);
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener");
+        a.dataset.bmonCta = "1";
+      }
+    });
+  }
+
+  function fixFooterLinks() {
+    // Some Framer exports can include empty footer link labels; fill them with a sensible CTA.
+    document.querySelectorAll("footer a[href]").forEach((a) => {
+      if ((a.textContent || "").trim()) return;
+      if (a.querySelector("svg")) return;
+
+      const p = a.querySelector("p");
+      if (!p) return;
+
+      p.textContent = "Contact";
+      a.setAttribute("href", "/#book-demo");
+    });
+  }
+
+  function rewriteText() {
+    const exact = new Map([
+      ["Madison AI", "BMON"],
+      ["Madison", "BMON"],
+      ["Meet Madison 👋", "Meet BMON 👋"],
+      ["Meet Madison 👋 Your new AI-Powered Digital Marketing Specialist,", "Meet BMON 👋 Your AI marketing copilot for local growth,"],
+      ["Your AI-Powered Digital Marketing Specialist", "AI marketing automation for local growth"],
+      ["who works tirelessly so you don’t have to.", "Automate your marketing—so you can focus on your customers."],
+      ["Your AI-Powered Digital Marketing Specialist, who works tirelessly so you don’t have to.", "Your AI marketing copilot that runs 24/7—so you don’t have to."],
+      ["Start My Free Trial", "Book Free Strategy Call"],
+      ["Start Free Trial", "Book Free Strategy Call"],
+      ["Log in", "Book a Call"],
+      ["Login", "Book a Call"],
+      ["Sign in", "Book a Call"],
+      ["Sign In", "Book a Call"],
+      ["Ready to attract more customers?", "Ready to get more customers?"],
+      [
+        "Get started today or book a free demo to see how Madison can help you grow your business.",
+        "Book a free strategy call and see how BMON helps you rank higher, earn more reviews, and turn clicks into appointments.",
+      ],
+    ]);
+
+    const substring = [
+      [/Madison AI/g, "BMON"],
+      [/\bMadison\b/g, "BMON"],
+    ];
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const value = node?.nodeValue;
+        if (!value || !value.trim()) return NodeFilter.FILTER_REJECT;
+
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+
+        const tag = parent.tagName;
+        if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") return NodeFilter.FILTER_REJECT;
+
+        // Avoid rewriting copy inside code/pre blocks or editable regions.
+        if (parent.closest("pre, code, [contenteditable='true']")) return NodeFilter.FILTER_REJECT;
+
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+
+    for (const textNode of nodes) {
+      const original = textNode.nodeValue;
+      if (!original) continue;
+
+      const trimmed = original.trim();
+      if (!trimmed) continue;
+
+      let next = original;
+
+      const exactReplacement = exact.get(trimmed);
+      if (exactReplacement) {
+        next = original.replace(trimmed, exactReplacement);
+      }
+
+      for (const [re, to] of substring) {
+        next = next.replace(re, to);
+      }
+
+      if (next !== original) textNode.nodeValue = next;
+    }
+
+    // Image alt text (keeps a11y intact after brand rename)
+    document.querySelectorAll("img[alt]").forEach((img) => {
+      const alt = img.getAttribute("alt");
+      if (!alt) return;
+
+      let next = alt;
+      next = next.replace(/Madison AI/g, "BMON");
+      next = next.replace(/\bMadison\b/g, "BMON");
+
+      if (next !== alt) img.setAttribute("alt", next);
+    });
+  }
+
+  function applyAll() {
+    updateMeta();
+    updateCanonicalAndOgUrl();
+    rewriteLinks();
+    fixFooterLinks();
+    rewriteText();
+  }
+
+  // Run once
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyAll);
+  } else {
+    applyAll();
+  }
+
+  // Re-run when Framer swaps routes / mutates DOM
+  const debounce = (fn, ms) => {
+    let t;
+    return () => {
+      clearTimeout(t);
+      t = setTimeout(fn, ms);
+    };
+  };
+
+  new MutationObserver(debounce(applyAll, 120)).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<!-- SnippetEnd: bmon-content -->
 
     <!-- End of bodyEnd -->
 </body>
