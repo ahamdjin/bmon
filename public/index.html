@@ -643,10 +643,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </style>
     </head>
     <body>
-        <!-- Start of Meetings Embed Script -->
-    <div class=&quot;meetings-iframe-container&quot; data-src=&quot;https://meetings.hubspot.com/madison-ai/website?embed=true&quot;></div>
-    <script type=&quot;text/javascript&quot; src=&quot;https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js&quot;></script>
-  <!-- End of Meetings Embed Script -->
+        <!-- Start of Booking (Fallback) -->
+    <div style=&quot;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:16px;text-align:center;&quot;>
+      <p style=&quot;margin:0 0 10px;font-size:14px;line-height:1.6;&quot;>Book a free strategy call.</p>
+      <p style=&quot;margin:0 0 14px;font-size:14px;line-height:1.6;&quot;>
+        Prefer email? <a href=&quot;mailto:support@bmon.ai&quot;>support@bmon.ai</a> &middot; <a href=&quot;tel:+12135834358&quot;>(213) 583-4358</a>
+      </p>
+      <a href=&quot;https://links.bmon.ai/widget/booking/gEVDq9hfE7hZU8XvE1zY&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; style=&quot;display:inline-block;padding:10px 16px;border-radius:999px;background:#5a45fe;color:#fff;text-decoration:none;font-weight:600;&quot;>Open Booking</a>
+    </div>
+  <!-- End of Booking (Fallback) -->
         <script type=&quot;module&quot;>
             let height = 0
 
@@ -692,7 +697,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script>
 (function () {
   // --- CONFIG -------------------------------------------------
-  const PERSIST_KEY = "madison_attrib";
+  const PERSIST_KEY = "bmon_attrib";
   const LINK_SELECTOR = 'a[href*="links.bmon.ai/widget/booking/"]';
   const TTL_DAYS = 90; // adjust to your attribution window
   // ------------------------------------------------------------
@@ -805,6 +810,93 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <!-- SnippetEnd: legacy-bodyEnd -->
 
+<!-- Snippet: bmon-button-interactions -->
+<style>
+  :root {
+    --bmon-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --bmon-ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+    --bmon-hover-raise: -2px;
+    --bmon-hover-scale: 1.015;
+    --bmon-press-scale: 0.985;
+    --bmon-shadow-hover: 0 18px 44px rgba(0, 0, 0, 0.14);
+    --bmon-shadow-press: 0 10px 24px rgba(0, 0, 0, 0.12);
+    --bmon-focus-ring: rgba(79, 70, 229, 0.55);
+  }
+
+  a[data-highlight="true"],
+  button[data-highlight="true"] {
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      translate 160ms var(--bmon-ease-out),
+      scale 160ms var(--bmon-ease-out),
+      filter 160ms var(--bmon-ease-out),
+      box-shadow 200ms var(--bmon-ease-out);
+    will-change: translate, scale;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  a[data-highlight="true"]:hover,
+  button[data-highlight="true"]:hover {
+    translate: 0 var(--bmon-hover-raise);
+    scale: var(--bmon-hover-scale);
+    filter: saturate(1.03);
+    box-shadow: var(--bmon-shadow-hover);
+  }
+
+  a[data-highlight="true"]:active,
+  button[data-highlight="true"]:active {
+    translate: 0 0;
+    scale: var(--bmon-press-scale);
+    box-shadow: var(--bmon-shadow-press);
+  }
+
+  a[data-highlight="true"]:focus-visible,
+  button[data-highlight="true"]:focus-visible {
+    outline: 2px solid var(--bmon-focus-ring);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    a[data-highlight="true"],
+    button[data-highlight="true"] {
+      transition: none;
+    }
+
+    a[data-highlight="true"]:hover,
+    a[data-highlight="true"]:active,
+    button[data-highlight="true"]:hover,
+    button[data-highlight="true"]:active {
+      translate: none;
+      scale: 1;
+      filter: none;
+      box-shadow: none;
+    }
+  }
+
+  /* Fallback for older browsers without translate/scale properties */
+  @supports not (translate: 0) {
+    a[data-highlight="true"],
+    button[data-highlight="true"] {
+      transition:
+        transform 160ms var(--bmon-ease-out),
+        filter 160ms var(--bmon-ease-out),
+        box-shadow 200ms var(--bmon-ease-out);
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    a[data-highlight="true"]:hover,
+    button[data-highlight="true"]:hover {
+      transform: translate3d(0, -2px, 0) scale(var(--bmon-hover-scale));
+    }
+
+    a[data-highlight="true"]:active,
+    button[data-highlight="true"]:active {
+      transform: translate3d(0, 0, 0) scale(var(--bmon-press-scale));
+    }
+  }
+</style>
+<!-- SnippetEnd: bmon-button-interactions -->
+
 <!-- Snippet: bmon-booking-embed -->
 <style>
   #book-demo {
@@ -839,6 +931,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     overflow: hidden;
   }
 
+  #book-demo .bmon-support {
+    margin: 0 0 14px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(22, 21, 37, 0.78);
+  }
+
+  #book-demo .bmon-support a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
   @media (max-width: 767.98px) {
     #book-demo {
       --bmon-booking-min-height: 1200px;
@@ -854,10 +960,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   const BOOKING_ID = "gEVDq9hfE7hZU8XvE1zY";
   const IFRAME_SRC_BASE = `https://links.bmon.ai/widget/booking/${BOOKING_ID}`;
   const EMBED_SCRIPT_SRC = "https://links.bmon.ai/js/form_embed.js";
+  const ATTRIB_KEY = "bmon_attrib";
 
   function getPersistedAttribution() {
     try {
-      const raw = localStorage.getItem("madison_attrib");
+      const raw = localStorage.getItem(ATTRIB_KEY);
       if (!raw) return {};
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== "object") return {};
@@ -903,6 +1010,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     while (container.firstChild) container.removeChild(container.firstChild);
 
+    const support = document.createElement("p");
+    support.className = "bmon-support";
+    support.innerHTML =
+      'Prefer email? <a href="mailto:support@bmon.ai">support@bmon.ai</a> · <a href="tel:+12135834358">(213) 583-4358</a>';
+
     const wrap = document.createElement("div");
     wrap.className = "bmon-booking-embed";
     wrap.setAttribute("data-bmon-booking", "1");
@@ -920,6 +1032,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.style.minHeight = "var(--bmon-booking-min-height, 980px)";
 
     wrap.appendChild(iframe);
+    container.appendChild(support);
     container.appendChild(wrap);
 
     ensureEmbedScript();
@@ -950,12 +1063,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Snippet: bmon-content -->
 <script>
 (() => {
-  const BOOKING_URL = "https://links.bmon.ai/widget/booking/gEVDq9hfE7hZU8XvE1zY";
+  const CTA_URL = "/#book-demo";
+  const CANONICAL_BASE = "https://bmon.ai";
 
   function updateMeta() {
-    const title = "BMON — AI Marketing Automation for Local Businesses";
+    const title = "BMON — Website Design, SEO & AI Automations for Local Growth";
     const description =
-      "BMON helps local businesses rank higher on Google, collect 5-star reviews, and turn leads into booked appointments with automated marketing.";
+      "BMON helps local businesses get found and get booked with Website Design, AI Implementation, Automations, SEO, AI Conversation Bots, Social Media Management, and Ad Campaigns.";
 
     if (document.title) document.title = title;
 
@@ -973,10 +1087,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   function updateCanonicalAndOgUrl() {
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute("href", `${window.location.origin}${window.location.pathname}`);
+    if (canonical) canonical.setAttribute("href", `${CANONICAL_BASE}/`);
 
     const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) ogUrl.setAttribute("content", window.location.href);
+    if (ogUrl) ogUrl.setAttribute("content", `${CANONICAL_BASE}/`);
   }
 
   function rewriteLinks() {
@@ -989,18 +1103,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         a.setAttribute("href", href.replace(/^\.\//, "/"));
       }
 
-      if (href.includes("app.meetmadison.ai")) {
-        a.setAttribute("href", BOOKING_URL);
-        a.setAttribute("target", "_blank");
-        a.setAttribute("rel", "noopener");
-        a.dataset.bmonCta = "1";
-        return;
-      }
-
-      if (href.includes("meetmadison.ai")) {
-        a.setAttribute("href", BOOKING_URL);
-        a.setAttribute("target", "_blank");
-        a.setAttribute("rel", "noopener");
+      if (href.includes("app.meetmadison.ai") || href.includes("meetmadison.ai")) {
+        a.setAttribute("href", CTA_URL);
+        a.removeAttribute("target");
+        a.removeAttribute("rel");
         a.dataset.bmonCta = "1";
       }
     });
@@ -1016,7 +1122,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       if (!p) return;
 
       p.textContent = "Contact";
-      a.setAttribute("href", "/#book-demo");
+      a.setAttribute("href", CTA_URL);
     });
   }
 
@@ -1025,21 +1131,46 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       ["Madison AI", "BMON"],
       ["Madison", "BMON"],
       ["Meet Madison 👋", "Meet BMON 👋"],
-      ["Meet Madison 👋 Your new AI-Powered Digital Marketing Specialist,", "Meet BMON 👋 Your AI marketing copilot for local growth,"],
-      ["Your AI-Powered Digital Marketing Specialist", "AI marketing automation for local growth"],
-      ["who works tirelessly so you don’t have to.", "Automate your marketing—so you can focus on your customers."],
-      ["Your AI-Powered Digital Marketing Specialist, who works tirelessly so you don’t have to.", "Your AI marketing copilot that runs 24/7—so you don’t have to."],
-      ["Start My Free Trial", "Book Free Strategy Call"],
-      ["Start Free Trial", "Book Free Strategy Call"],
+      ["Meet Madison 👋 Your new AI-Powered Digital Marketing Specialist,", "Meet BMON 👋 Your AI-powered local growth team."],
+      ["Your AI-Powered Digital Marketing Specialist", "Website Design | AI Implementation | Automations | SEO"],
+      ["who works tirelessly so you don’t have to.", "Website Design | AI Implementation | Automations | SEO | AI Conversation Bot | Social Media Management | Ad Campaigns"],
+      ["Your AI-Powered Digital Marketing Specialist, who works tirelessly so you don’t have to.", "Website Design, SEO, and AI automations that get you booked—without the busywork."],
+      ["Start My Free Trial", "Book a Free Strategy Call"],
+      ["Start Free Trial", "Book a Free Strategy Call"],
+      ["Start free trial", "Book a Free Strategy Call"],
+      ["Book My Free Demo", "Book a Free Strategy Call"],
       ["Log in", "Book a Call"],
       ["Login", "Book a Call"],
       ["Sign in", "Book a Call"],
       ["Sign In", "Book a Call"],
-      ["Ready to attract more customers?", "Ready to get more customers?"],
+      ["Try Essential free", "Get Started"],
+      ["Try Premium free", "Get Started"],
+      ["Try Ultimate free", "Get Started"],
+      ["Pricing", "Services"],
+      ["Ready to attract more customers?", "Ready to get more booked appointments?"],
       [
         "Get started today or book a free demo to see how Madison can help you grow your business.",
-        "Book a free strategy call and see how BMON helps you rank higher, earn more reviews, and turn clicks into appointments.",
+        "Book a free strategy call and get a plan for Website Design, SEO, Automations, and Ads—built for local growth.",
       ],
+      [
+        "Get discovered and chosen by consumers searching for the products or services you offer by improving your Local SEO.",
+        "Show up when locals search—SEO + Google Business Profile optimizations that drive calls and booked appointments.",
+      ],
+      [
+        "Madison ensures you protect and leverage your reputation by making it simple to get, respond to, and showcase reviews.",
+        "Automate review requests and responses so you earn trust, win the click, and stay ahead of competitors.",
+      ],
+      [
+        "Make data-driven decisions through centralized and visualized key metrics, and direct answers to your natural language questions.",
+        "See what’s working in one dashboard—and get AI answers in plain English.",
+      ],
+      [
+        "Madison builds your brand awareness and helps you stay top-of-mind by creating, targeting, and scheduling engaging cross-platform campaigns.",
+        "Stay top-of-mind with Social Media Management and Ad Campaigns—planned, created, and scheduled for you.",
+      ],
+      ["Reputation Management", "Automations"],
+      ["Insights & Analytics", "AI Implementation"],
+      ["Social Media Management", "Social Media Management & Ad Campaigns"],
     ]);
 
     const substring = [
