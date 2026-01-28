@@ -1,31 +1,18 @@
-## BMON (marketing site)
+## BMON (static site)
 
-Next.js + Tailwind marketing site (Vercel-ready).
+This repo deploys a static Framer-exported site from `public/`.
 
-### Local dev
+### Local preview
+
+From the repo root:
 
 ```bash
-npm install
-npm run dev
+cd public
+python -m http.server 3000
 ```
 
 Open `http://localhost:3000`.
 
-### Pages
+### Deploy (Vercel)
 
-- `/` (home)
-- `/pricing`
-- `/integrations`
-- `/partners`
-- `/features/[slug]`
-- `/terms`
-- `/privacy`
-
-### Notes
-
-- Images are hotlinked from `framerusercontent.com` to keep parity with the reference layout.
-- Demo scheduling uses the GoHighLevel embed (`links.bmon.ai`) on the home page.
-
-### Deploy
-
-Push to GitHub and import into Vercel. Vercel detects Next.js automatically.
+- `vercel.json` sets `public/` as the output directory and rewrites all routes to `index.html` so deep links like `/pricing` work.
