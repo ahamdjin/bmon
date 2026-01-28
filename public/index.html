@@ -807,9 +807,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <!-- Snippet: bmon-booking-embed -->
 <style>
+  #book-demo {
+    --bmon-booking-min-height: 980px;
+  }
+
   #book-demo .framer-1drel74 {
     height: auto !important;
-    min-height: 720px;
+    min-height: var(--bmon-booking-min-height);
     overflow: visible !important;
   }
 
@@ -830,14 +834,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   #book-demo .bmon-booking-embed iframe {
     display: block;
     width: 100%;
-    min-height: 720px;
+    min-height: var(--bmon-booking-min-height);
     border: 0;
     overflow: hidden;
   }
 
   @media (max-width: 767.98px) {
+    #book-demo {
+      --bmon-booking-min-height: 1200px;
+    }
+
     #book-demo .bmon-booking-embed iframe {
-      min-height: 820px;
+      min-height: var(--bmon-booking-min-height);
     }
   }
 </style>
@@ -909,7 +917,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.style.width = "100%";
     iframe.style.border = "none";
     iframe.style.overflow = "hidden";
-    iframe.style.minHeight = "720px";
+    iframe.style.minHeight = "var(--bmon-booking-min-height, 980px)";
 
     wrap.appendChild(iframe);
     container.appendChild(wrap);
