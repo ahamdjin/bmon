@@ -1,9 +1,16 @@
 {
-  "name": "bmon-static",
-  "version": "1.0.0",
+  "name": "bmon",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "vercel-build": "echo \"Static site: no build step\"",
-    "build": "echo \"Static site: no build step\""
+    "dev": "next dev",
+    "build": "next build",
+    "vercel-build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.16",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   }
 }
