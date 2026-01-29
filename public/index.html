@@ -977,12 +977,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   /* Framer portals (video overlays, etc.) must sit above elevated CTA stacks */
   #overlay {
     position: relative;
-    z-index: 2147482900 !important;
+    z-index: 2147483600 !important;
   }
 
   #overlay > * {
     position: relative;
-    z-index: 2147482900 !important;
+    z-index: 2147483600 !important;
   }
 
   .bmon-modal {
@@ -1263,6 +1263,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     (e) => {
       const target = e.target;
       if (target instanceof Element && target.closest(".bmon-modal")) return;
+      if (target instanceof Element && target.closest("#overlay")) return;
 
       const pathname = getPathname();
       const enforceAllButtons = pathname !== "/";
@@ -1270,10 +1271,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       const btnAny =
         enforceAllButtons && target instanceof Element ? target.closest("button") : null;
 
+      const highlightAny =
+        enforceAllButtons && target instanceof Element ? target.closest('[data-highlight="true"]') : null;
+
       const a = findAnchor(target);
       const btn =
         target instanceof Element ? target.closest('button[data-highlight="true"]') : null;
-      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny) return;
+      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny && !highlightAny) return;
       if (isModifiedClick(e)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
