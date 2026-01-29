@@ -1277,7 +1277,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       const a = findAnchor(target);
       const btn =
         target instanceof Element ? target.closest('button[data-highlight="true"]') : null;
-      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny && !highlightAny) return;
+
+      const partnersCta =
+        pathname === "/partners" && target instanceof Element
+          ? target.closest('a,button,[role="button"],[tabindex]')
+          : null;
+      const isBecomePartner =
+        partnersCta instanceof HTMLElement ? /become\\s+a\\s+partner/i.test(partnersCta.textContent || "") : false;
+
+      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny && !highlightAny && !isBecomePartner) return;
       if (isModifiedClick(e)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -1324,25 +1332,25 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     top: auto !important;
     transform: none !important;
     width: 100% !important;
-    max-width: 680px;
-    margin: 0 auto;
+    max-width: none !important;
+    margin: 0 !important;
   }
 
-  #book-demo .bmon-booking-embed {
+  .bmon-booking-embed {
     width: 100%;
     border-radius: 16px;
     overflow: hidden;
   }
 
-  #book-demo .bmon-booking-embed iframe {
+  .bmon-booking-embed iframe {
     display: block;
     width: 100%;
-    min-height: var(--bmon-booking-min-height);
+    min-height: var(--bmon-booking-min-height, 980px);
     border: 0;
     overflow: auto;
   }
 
-  #book-demo .bmon-support {
+  .bmon-support {
     margin: 0 0 14px;
     text-align: center;
     font-size: 14px;
@@ -1350,7 +1358,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     color: rgba(22, 21, 37, 0.78);
   }
 
-  #book-demo .bmon-support a {
+  .bmon-support a {
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -1359,10 +1367,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   @media (max-width: 767.98px) {
     #book-demo {
       --bmon-booking-min-height: 1200px;
-    }
-
-    #book-demo .bmon-booking-embed iframe {
-      min-height: var(--bmon-booking-min-height);
     }
   }
 </style>
@@ -1411,15 +1415,50 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     document.body.appendChild(script);
   }
 
-  function mountBooking() {
+  function isLegacyCalendarIframe(iframe) {
+    if (!(iframe instanceof HTMLIFrameElement)) return false;
+    if (iframe.closest(".bmon-modal")) return false;
+    if (iframe.closest(".bmon-booking-embed")) return false;
+    if (iframe.closest("#overlay")) return false;
+
+    const src = (iframe.getAttribute("src") || "").toLowerCase();
+    const srcdoc = (iframe.getAttribute("srcdoc") || "").toLowerCase();
+    const hay = `${src}\n${srcdoc}`;
+    if (!hay) return false;
+
+    return (
+      hay.includes("/widget/booking/") ||
+      hay.includes("calendly.com") ||
+      hay.includes("cal.com") ||
+      hay.includes("meetings.hubspot.com") ||
+      hay.includes("acuityscheduling.com") ||
+      hay.includes("youcanbook.me") ||
+      hay.includes("microsoft.com/bookings")
+    );
+  }
+
+  function findPreferredHost() {
     const cta = document.getElementById("book-demo");
-    if (!cta) return;
+    if (!cta) return null;
+    const host = cta.querySelector(".framer-xi24iv-container");
+    return host instanceof HTMLElement ? host : null;
+  }
 
-    const container = cta.querySelector(".framer-xi24iv-container");
-    if (!container) return;
-    if (container.querySelector('[data-bmon-booking="1"]')) return;
+  function collectLegacyHosts() {
+    const hosts = new Set();
+    document.querySelectorAll("iframe").forEach((iframe) => {
+      if (!isLegacyCalendarIframe(iframe)) return;
+      const host = iframe.parentElement instanceof HTMLElement ? iframe.parentElement : null;
+      if (host) hosts.add(host);
+    });
+    return hosts;
+  }
 
-    while (container.firstChild) container.removeChild(container.firstChild);
+  function renderBooking(host) {
+    if (!(host instanceof HTMLElement)) return;
+    if (host.querySelector('[data-bmon-booking="1"]')) return;
+
+    while (host.firstChild) host.removeChild(host.firstChild);
 
     const support = document.createElement("p");
     support.className = "bmon-support";
@@ -1443,9 +1482,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.style.minHeight = "var(--bmon-booking-min-height, 980px)";
 
     wrap.appendChild(iframe);
-    container.appendChild(support);
-    container.appendChild(wrap);
+    host.appendChild(support);
+    host.appendChild(wrap);
+  }
 
+  function mountBooking() {
+    const hosts = collectLegacyHosts();
+    const preferred = findPreferredHost();
+    if (preferred) hosts.add(preferred);
+    if (hosts.size === 0) return;
+
+    hosts.forEach((host) => renderBooking(host));
     ensureEmbedScript();
   }
 

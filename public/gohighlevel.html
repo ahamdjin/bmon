@@ -1270,7 +1270,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
       const a = findAnchor(target);
       const btn = target instanceof Element ? target.closest('button[data-highlight="true"]') : null;
-      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny && !highlightAny) return;
+
+      const partnersCta =
+        pathname === "/partners" && target instanceof Element
+          ? target.closest('a,button,[role="button"],[tabindex]')
+          : null;
+      const isBecomePartner =
+        partnersCta instanceof HTMLElement ? /become\\s+a\\s+partner/i.test(partnersCta.textContent || "") : false;
+
+      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny && !highlightAny && !isBecomePartner) return;
       if (isModifiedClick(e)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
