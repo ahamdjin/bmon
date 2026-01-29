@@ -974,6 +974,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     overflow: visible !important;
   }
 
+  /* Framer portals (video overlays, etc.) must sit above elevated CTA stacks */
+  #overlay {
+    position: relative;
+    z-index: 2147482900 !important;
+  }
+
+  #overlay > * {
+    position: relative;
+    z-index: 2147482900 !important;
+  }
+
   .bmon-modal {
     position: fixed;
     inset: 0;
@@ -1138,6 +1149,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     if (!a) return false;
     const href = a.getAttribute("href") || "";
     return (
+      a.classList.contains("framer-dxFHZ") ||
       a.dataset.bmonCta === "1" ||
       a.hasAttribute("data-highlight") ||
       href.includes("#book-demo") ||
@@ -1245,9 +1257,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     "click",
     (e) => {
       const target = e.target;
+      if (target instanceof Element && target.closest(".bmon-modal")) return;
+
+      const pathname = getPathname();
+      const enforceAllButtons = pathname !== "/";
+      const btnAny =
+        enforceAllButtons && target instanceof Element ? target.closest("button") : null;
+
       const a = findAnchor(target);
       const btn = target instanceof Element ? target.closest('button[data-highlight="true"]') : null;
-      if (!shouldOpenBookModalFromAnchor(a) && !btn) return;
+      if (!shouldOpenBookModalFromAnchor(a) && !btn && !btnAny) return;
       if (isModifiedClick(e)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
