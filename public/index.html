@@ -884,6 +884,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   button[data-highlight="true"] {
     -webkit-tap-highlight-color: transparent;
     transform: translate3d(0, 0, 0) scale(1);
+    z-index: 0;
     transition:
       transform 160ms var(--bmon-ease),
       filter 160ms var(--bmon-ease),
@@ -912,6 +913,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   a[data-highlight="true"]:hover,
   button[data-highlight="true"]:hover {
+    z-index: 5;
     transform: translate3d(0, var(--bmon-hover-translate), 0) scale(var(--bmon-hover-scale));
     filter: saturate(1.02);
     box-shadow: var(--bmon-shadow-hover);
@@ -924,6 +926,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   a[data-highlight="true"]:active,
   button[data-highlight="true"]:active {
+    z-index: 5;
     transform: translate3d(0, var(--bmon-press-translate), 0) scale(var(--bmon-press-scale));
     box-shadow: var(--bmon-shadow-press);
   }
@@ -957,16 +960,264 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </style>
 <!-- SnippetEnd: bmon-button-interactions -->
 
+<!-- Snippet: bmon-book-call-modal -->
+<style>
+  .bmon-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    display: none;
+  }
+
+  .bmon-modal[data-open="true"] {
+    display: block;
+  }
+
+  .bmon-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 14, 0.58);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bmon-modal[data-open="true"] .bmon-modal__backdrop {
+    opacity: 1;
+  }
+
+  .bmon-modal__wrap {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+  }
+
+  .bmon-modal__card {
+    width: min(920px, calc(100vw - 36px));
+    max-height: calc(100dvh - 36px);
+    overflow: hidden;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+    transform: translate3d(0, 10px, 0) scale(0.985);
+    opacity: 0;
+    transition:
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bmon-modal[data-open="true"] .bmon-modal__card {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .bmon-modal__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid rgba(22, 21, 37, 0.12);
+  }
+
+  .bmon-modal__title {
+    margin: 0;
+    font: 650 16px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: rgba(22, 21, 37, 0.92);
+    letter-spacing: -0.01em;
+  }
+
+  .bmon-modal__close {
+    appearance: none;
+    border: 0;
+    background: rgba(22, 21, 37, 0.06);
+    color: rgba(22, 21, 37, 0.86);
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition:
+      transform 120ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bmon-modal__close:hover {
+    transform: translateY(-1px);
+    background: rgba(22, 21, 37, 0.09);
+  }
+
+  .bmon-modal__close:active {
+    transform: translateY(0);
+  }
+
+  .bmon-modal__close:focus-visible {
+    outline: 2px solid rgba(79, 70, 229, 0.55);
+    outline-offset: 3px;
+  }
+
+  .bmon-modal__body {
+    padding: 0;
+    background: #fff;
+  }
+
+  .bmon-modal__iframe {
+    width: 100%;
+    height: min(82dvh, 920px);
+    border: 0;
+    display: block;
+    background: #fff;
+  }
+
+  @media (max-width: 767.98px) {
+    .bmon-modal__iframe {
+      height: min(86dvh, 1200px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bmon-modal__backdrop,
+    .bmon-modal__card {
+      transition: none;
+    }
+  }
+</style>
+<div class="bmon-modal" data-open="false" aria-hidden="true">
+  <div class="bmon-modal__backdrop" data-bmon-modal-close="1"></div>
+  <div class="bmon-modal__wrap" role="presentation">
+    <section
+      class="bmon-modal__card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bmon-book-call-title">
+      <div class="bmon-modal__top">
+        <h2 class="bmon-modal__title" id="bmon-book-call-title">Book a Free Strategy Call</h2>
+        <button class="bmon-modal__close" type="button" data-bmon-modal-close="1" aria-label="Close">Close</button>
+      </div>
+      <div class="bmon-modal__body" id="bmon-book-call-body"></div>
+    </section>
+  </div>
+</div>
+<script>
+(() => {
+  const BOOKING_ID = "gEVDq9hfE7hZU8XvE1zY";
+  const IFRAME_SRC_BASE = `https://links.bmon.ai/widget/booking/${BOOKING_ID}`;
+  const EMBED_SCRIPT_SRC = "https://links.bmon.ai/js/form_embed.js";
+
+  function ensureEmbedScript() {
+    if (document.querySelector(`script[src="${EMBED_SCRIPT_SRC}"]`)) return;
+    const script = document.createElement("script");
+    script.src = EMBED_SCRIPT_SRC;
+    script.async = true;
+    script.type = "text/javascript";
+    document.body.appendChild(script);
+  }
+
+  function getPathname() {
+    const p = (window.location.pathname || "/").replace(/\/+$/, "");
+    return p || "/";
+  }
+
+  function isModifiedClick(e) {
+    return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+  }
+
+  function findAnchor(target) {
+    if (!(target instanceof Element)) return null;
+    return target.closest("a[href]");
+  }
+
+  function shouldOpenBookModalFromAnchor(a) {
+    if (!a) return false;
+    if (!a.hasAttribute("data-highlight")) return false;
+    const href = a.getAttribute("href") || "";
+    return href.includes("#book-demo");
+  }
+
+  function getModalEls() {
+    const modal = document.querySelector(".bmon-modal");
+    const body = document.getElementById("bmon-book-call-body");
+    return { modal, body };
+  }
+
+  function openModal() {
+    const { modal, body } = getModalEls();
+    if (!modal || !body) return;
+    if (modal.dataset.open === "true") return;
+
+    modal.dataset.open = "true";
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+
+    while (body.firstChild) body.removeChild(body.firstChild);
+    const iframe = document.createElement("iframe");
+    iframe.className = "bmon-modal__iframe";
+    iframe.src = IFRAME_SRC_BASE + window.location.search;
+    iframe.title = "Book a strategy call";
+    iframe.loading = "lazy";
+    iframe.scrolling = "no";
+    iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+    body.appendChild(iframe);
+
+    ensureEmbedScript();
+
+    const close = modal.querySelector(".bmon-modal__close");
+    if (close instanceof HTMLElement) close.focus({ preventScroll: true });
+  }
+
+  function closeModal() {
+    const { modal, body } = getModalEls();
+    if (!modal || !body) return;
+    if (modal.dataset.open !== "true") return;
+
+    modal.dataset.open = "false";
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+
+    while (body.firstChild) body.removeChild(body.firstChild);
+  }
+
+  // Only intended for non-home marketing pages (integrations/partners/pricing).
+  const pathname = getPathname();
+  if (pathname === "/") return;
+
+  document.addEventListener(
+    "click",
+    (e) => {
+      const a = findAnchor(e.target);
+      if (!shouldOpenBookModalFromAnchor(a)) return;
+      if (isModifiedClick(e)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openModal();
+    },
+    true,
+  );
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    closeModal();
+  });
+
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (!t.closest('[data-bmon-modal-close="1"]')) return;
+    closeModal();
+  });
+})();
+</script>
+<!-- SnippetEnd: bmon-book-call-modal -->
+
 <!-- Snippet: bmon-booking-embed -->
 <style>
   #book-demo {
-    --bmon-booking-iframe-height: clamp(760px, 82vh, 980px);
-    --bmon-booking-wrapper-min-height: calc(var(--bmon-booking-iframe-height) + 74px);
+    --bmon-booking-min-height: 980px;
   }
 
   #book-demo .framer-1drel74 {
     height: auto !important;
-    min-height: var(--bmon-booking-wrapper-min-height);
+    min-height: var(--bmon-booking-min-height);
     overflow: visible !important;
   }
 
@@ -989,8 +1240,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   #book-demo .bmon-booking-embed iframe {
     display: block;
     width: 100%;
-    height: var(--bmon-booking-iframe-height) !important;
-    max-height: var(--bmon-booking-iframe-height) !important;
+    min-height: var(--bmon-booking-min-height);
     border: 0;
     overflow: hidden;
   }
@@ -1011,13 +1261,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   @media (max-width: 767.98px) {
     #book-demo {
-      --bmon-booking-iframe-height: clamp(920px, 86vh, 1200px);
-      --bmon-booking-wrapper-min-height: calc(var(--bmon-booking-iframe-height) + 86px);
+      --bmon-booking-min-height: 1200px;
     }
 
     #book-demo .bmon-booking-embed iframe {
-      height: var(--bmon-booking-iframe-height) !important;
-      max-height: var(--bmon-booking-iframe-height) !important;
+      min-height: var(--bmon-booking-min-height);
     }
   }
 </style>
@@ -1067,6 +1315,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   function mountBooking() {
+    if ((window.location.pathname || "/").replace(/\/+$/, "") !== "/") return;
     const cta = document.getElementById("book-demo");
     if (!cta) return;
 
@@ -1095,7 +1344,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.style.width = "100%";
     iframe.style.border = "none";
     iframe.style.overflow = "hidden";
-    iframe.style.height = "var(--bmon-booking-iframe-height, 980px)";
+    iframe.style.minHeight = "var(--bmon-booking-min-height, 980px)";
 
     wrap.appendChild(iframe);
     container.appendChild(support);
@@ -1152,11 +1401,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   function updateCanonicalAndOgUrl() {
+    const pathname = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+    const canonicalUrl = `${CANONICAL_BASE}${pathname === "/" ? "/" : pathname}`;
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute("href", `${CANONICAL_BASE}/`);
+    if (canonical) canonical.setAttribute("href", canonicalUrl);
 
     const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) ogUrl.setAttribute("content", `${CANONICAL_BASE}/`);
+    if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
   }
 
   function rewriteLinks() {

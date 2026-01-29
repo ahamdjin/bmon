@@ -884,6 +884,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   button[data-highlight="true"] {
     -webkit-tap-highlight-color: transparent;
     transform: translate3d(0, 0, 0) scale(1);
+    z-index: 0;
     transition:
       transform 160ms var(--bmon-ease),
       filter 160ms var(--bmon-ease),
@@ -912,6 +913,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   a[data-highlight="true"]:hover,
   button[data-highlight="true"]:hover {
+    z-index: 5;
     transform: translate3d(0, var(--bmon-hover-translate), 0) scale(var(--bmon-hover-scale));
     filter: saturate(1.02);
     box-shadow: var(--bmon-shadow-hover);
@@ -924,6 +926,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   a[data-highlight="true"]:active,
   button[data-highlight="true"]:active {
+    z-index: 5;
     transform: translate3d(0, var(--bmon-press-translate), 0) scale(var(--bmon-press-scale));
     box-shadow: var(--bmon-shadow-press);
   }
@@ -1189,11 +1192,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   function updateCanonicalAndOgUrl() {
+    const pathname = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+    const canonicalUrl = `${CANONICAL_BASE}${pathname === "/" ? "/" : pathname}`;
     const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute("href", `${CANONICAL_BASE}/`);
+    if (canonical) canonical.setAttribute("href", canonicalUrl);
 
     const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) ogUrl.setAttribute("content", `${CANONICAL_BASE}/`);
+    if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
   }
 
   function rewriteLinks() {
