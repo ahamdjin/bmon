@@ -1458,14 +1458,54 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     const hosts = new Set();
     document.querySelectorAll("iframe").forEach((iframe) => {
       if (!isLegacyCalendarIframe(iframe)) return;
-      const host = iframe.parentElement instanceof HTMLElement ? iframe.parentElement : null;
+
+      const framerHost = iframe.closest(".framer-xi24iv-container");
+      const host =
+        framerHost instanceof HTMLElement
+          ? framerHost
+          : iframe.parentElement instanceof HTMLElement
+            ? iframe.parentElement
+            : null;
       if (host) hosts.add(host);
     });
     return hosts;
   }
 
+  function normalizeBookingHost(host) {
+    if (!(host instanceof HTMLElement)) return;
+
+    const set = (el, prop, value) => el.style.setProperty(prop, value, "important");
+
+    set(host, "position", "relative");
+    set(host, "left", "auto");
+    set(host, "top", "auto");
+    set(host, "transform", "none");
+    set(host, "width", "100%");
+    set(host, "max-width", "none");
+    set(host, "margin", "0");
+    set(host, "height", "auto");
+    set(host, "overflow", "visible");
+
+    let node = host.parentElement;
+    let steps = 0;
+    while (node && steps < 4) {
+      if (!(node instanceof HTMLElement)) break;
+      if (node.id === "book-demo") break;
+
+      set(node, "overflow", "visible");
+      if (steps < 2) {
+        set(node, "height", "auto");
+        set(node, "min-height", "var(--bmon-booking-min-height, 980px)");
+      }
+
+      node = node.parentElement;
+      steps += 1;
+    }
+  }
+
   function renderBooking(host) {
     if (!(host instanceof HTMLElement)) return;
+    normalizeBookingHost(host);
     if (host.querySelector('[data-bmon-booking="1"]')) return;
 
     while (host.firstChild) host.removeChild(host.firstChild);
@@ -1491,9 +1531,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   function mountBooking() {
-    const hosts = collectLegacyHosts();
     const preferred = findPreferredHost();
-    if (preferred) hosts.add(preferred);
+    if (preferred) {
+      renderBooking(preferred);
+      ensureEmbedScript();
+      return;
+    }
+
+    const hosts = collectLegacyHosts();
     if (hosts.size === 0) return;
 
     hosts.forEach((host) => renderBooking(host));
