@@ -974,15 +974,39 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     overflow: visible !important;
   }
 
+  [data-framer-name="Header"] {
+    z-index: 2147482000 !important;
+  }
+
   /* Framer portals (video overlays, etc.) must sit above elevated CTA stacks */
   #overlay {
-    position: relative;
     z-index: 2147483600 !important;
   }
 
   #overlay > * {
-    position: relative;
     z-index: 2147483600 !important;
+  }
+
+  .bmon-footer-contact {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 16px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(24, 28, 57, 0.78);
+  }
+
+  .bmon-footer-contact a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .bmon-footer-contact__sep {
+    opacity: 0.55;
   }
 
   .bmon-modal {
@@ -1350,20 +1374,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     overflow: auto;
   }
 
-  .bmon-support {
-    margin: 0 0 14px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.6;
-    color: rgba(22, 21, 37, 0.78);
-  }
-
-  .bmon-support a {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
   @media (max-width: 767.98px) {
     #book-demo {
       --bmon-booking-min-height: 1200px;
@@ -1460,11 +1470,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     while (host.firstChild) host.removeChild(host.firstChild);
 
-    const support = document.createElement("p");
-    support.className = "bmon-support";
-    support.innerHTML =
-      'Prefer email? <a href="mailto:support@bmon.ai">support@bmon.ai</a> · <a href="tel:+12135834358">(213) 583-4358</a>';
-
     const wrap = document.createElement("div");
     wrap.className = "bmon-booking-embed";
     wrap.setAttribute("data-bmon-booking", "1");
@@ -1482,7 +1487,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.style.minHeight = "var(--bmon-booking-min-height, 980px)";
 
     wrap.appendChild(iframe);
-    host.appendChild(support);
     host.appendChild(wrap);
   }
 
@@ -1595,6 +1599,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       p.textContent = "Contact";
       a.setAttribute("href", CTA_URL);
     });
+  }
+
+  function mountFooterContact() {
+    const bottom = document.querySelector('[data-framer-name="Bottom"]');
+    if (!(bottom instanceof HTMLElement)) return;
+    if (bottom.querySelector(".bmon-footer-contact")) return;
+
+    const wrap = document.createElement("div");
+    wrap.className = "bmon-footer-contact";
+    wrap.innerHTML =
+      '<a href="mailto:support@bmon.ai">support@bmon.ai</a>' +
+      '<span class="bmon-footer-contact__sep" aria-hidden="true">·</span>' +
+      '<a href="tel:+12135834358">(213) 583-4358</a>';
+
+    const first = bottom.firstElementChild;
+    if (first) bottom.insertBefore(wrap, first);
+    else bottom.appendChild(wrap);
   }
 
   function rewriteText() {
@@ -1711,6 +1732,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     updateCanonicalAndOgUrl();
     rewriteLinks();
     fixFooterLinks();
+    mountFooterContact();
     rewriteText();
   }
 
