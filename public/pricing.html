@@ -885,12 +885,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     -webkit-tap-highlight-color: transparent;
     transform: translate3d(0, 0, 0) scale(1);
     z-index: 0;
+    --bmon-border-inset: 0 0 0 0 transparent;
     transition:
       transform 160ms var(--bmon-ease),
       filter 160ms var(--bmon-ease),
       box-shadow 220ms var(--bmon-ease);
     will-change: transform;
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    box-shadow: var(--bmon-border-inset);
     position: relative;
     isolation: isolate;
   }
@@ -916,7 +917,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     z-index: 5;
     transform: translate3d(0, var(--bmon-hover-translate), 0) scale(var(--bmon-hover-scale));
     filter: saturate(1.02);
-    box-shadow: var(--bmon-shadow-hover);
+    box-shadow: var(--bmon-shadow-hover), var(--bmon-border-inset);
   }
 
   a[data-highlight="true"]:hover::after,
@@ -928,7 +929,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   button[data-highlight="true"]:active {
     z-index: 5;
     transform: translate3d(0, var(--bmon-press-translate), 0) scale(var(--bmon-press-scale));
-    box-shadow: var(--bmon-shadow-press);
+    box-shadow: var(--bmon-shadow-press), var(--bmon-border-inset);
   }
 
   a[data-highlight="true"]:active::after,
@@ -940,6 +941,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   button[data-highlight="true"]:focus-visible {
     outline: 2px solid var(--bmon-focus-ring);
     outline-offset: 4px;
+  }
+
+  /* White CTA needs a clearer edge on white backgrounds */
+  [data-framer-name="WhiteChevron"][data-highlight="true"] {
+    --bmon-border-inset: 0 0 0 1px rgba(22, 21, 37, 0.16) inset;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -962,6 +968,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <!-- Snippet: bmon-book-call-modal -->
 <style>
+  [data-bmon-cta-stack="1"] {
+    position: relative !important;
+    z-index: 2147480 !important;
+    overflow: visible !important;
+  }
+
   .bmon-modal {
     position: fixed;
     inset: 0;
@@ -1129,9 +1141,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   function shouldOpenBookModalFromAnchor(a) {
     if (!a) return false;
-    if (!a.hasAttribute("data-highlight")) return false;
     const href = a.getAttribute("href") || "";
-    return href.includes("#book-demo");
+    return (
+      a.dataset.bmonCta === "1" ||
+      a.hasAttribute("data-highlight") ||
+      href.includes("#book-demo") ||
+      href.includes("links.bmon.ai/widget/booking/")
+    );
   }
 
   function getModalEls() {
@@ -1155,8 +1171,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.src = IFRAME_SRC_BASE + window.location.search;
     iframe.title = "Book a strategy call";
     iframe.loading = "lazy";
-    iframe.scrolling = "no";
+    iframe.scrolling = "yes";
     iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+    iframe.style.overflow = "auto";
     body.appendChild(iframe);
 
     ensureEmbedScript();
@@ -1177,18 +1194,69 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     while (body.firstChild) body.removeChild(body.firstChild);
   }
 
-  // Only intended for non-home marketing pages (integrations/partners/pricing).
-  const pathname = getPathname();
-  if (pathname === "/") return;
+  function elevateCtaStack() {
+    document.querySelectorAll('a[data-highlight="true"], button[data-highlight="true"]').forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      let node = el.parentElement;
+      let steps = 0;
+      while (node && steps < 8) {
+        if (!(node instanceof HTMLElement)) break;
+        const cls = node.className;
+        const isLikelyWrapper = typeof cls === "string" && (cls.includes("container") || cls.includes("framer-"));
+        if (isLikelyWrapper) {
+          const cs = window.getComputedStyle(node);
+          if (cs.transform !== "none" || cs.perspective !== "none" || cs.filter !== "none") {
+            node.setAttribute("data-bmon-cta-stack", "1");
+          }
+          if (
+            cs.overflow === "hidden" ||
+            cs.overflowX === "hidden" ||
+            cs.overflowY === "hidden" ||
+            cs.clipPath !== "none"
+          ) {
+            node.setAttribute("data-bmon-cta-stack", "1");
+          }
+        }
+
+        node = node.parentElement;
+        steps += 1;
+      }
+    });
+  }
+
+  function sanitizeCtaLinks() {
+    document.querySelectorAll("a[href]").forEach((a) => {
+      const href = a.getAttribute("href") || "";
+      const isBooking =
+        href.includes("#book-demo") || href.includes("links.bmon.ai/widget/booking/") || a.dataset.bmonCta === "1";
+      if (!isBooking && !a.hasAttribute("data-highlight")) return;
+      a.removeAttribute("target");
+      a.removeAttribute("rel");
+    });
+  }
+
+  function init() {
+    elevateCtaStack();
+    sanitizeCtaLinks();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 
   document.addEventListener(
     "click",
     (e) => {
-      const a = findAnchor(e.target);
-      if (!shouldOpenBookModalFromAnchor(a)) return;
+      const target = e.target;
+      const a = findAnchor(target);
+      const btn =
+        target instanceof Element ? target.closest('button[data-highlight="true"]') : null;
+      if (!shouldOpenBookModalFromAnchor(a) && !btn) return;
       if (isModifiedClick(e)) return;
       e.preventDefault();
-      e.stopPropagation();
+      e.stopImmediatePropagation();
       openModal();
     },
     true,
@@ -1205,6 +1273,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     if (!t.closest('[data-bmon-modal-close="1"]')) return;
     closeModal();
   });
+
+  new MutationObserver(() => {
+    elevateCtaStack();
+    sanitizeCtaLinks();
+  }).observe(document.body, { childList: true, subtree: true });
 })();
 </script>
 <!-- SnippetEnd: bmon-book-call-modal -->
@@ -1242,7 +1315,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     width: 100%;
     min-height: var(--bmon-booking-min-height);
     border: 0;
-    overflow: hidden;
+    overflow: auto;
   }
 
   #book-demo .bmon-support {
@@ -1339,11 +1412,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     iframe.id = `${BOOKING_ID}_${Date.now()}`;
     iframe.title = "Book a strategy call";
     iframe.loading = "lazy";
-    iframe.scrolling = "no";
+    iframe.scrolling = "yes";
     iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
     iframe.style.width = "100%";
     iframe.style.border = "none";
-    iframe.style.overflow = "hidden";
+    iframe.style.overflow = "auto";
     iframe.style.minHeight = "var(--bmon-booking-min-height, 980px)";
 
     wrap.appendChild(iframe);
@@ -1420,6 +1493,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         a.setAttribute("href", href.replace(/^\.\//, "/"));
       }
 
+      const nextHref = a.getAttribute("href") || "";
+      const isBookingLink =
+        nextHref.includes("#book-demo") || nextHref.includes("links.bmon.ai/widget/booking/");
+
+      if (isBookingLink) {
+        a.setAttribute("href", CTA_URL);
+        a.removeAttribute("target");
+        a.removeAttribute("rel");
+        a.dataset.bmonCta = "1";
+      }
+
       if (href.includes("app.bmon.ai") || href.includes("bmon.ai")) {
         a.setAttribute("href", CTA_URL);
         a.removeAttribute("target");
@@ -1448,22 +1532,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       ["BMON", "BMON"],
       ["BMON", "BMON"],
       ["Meet BMON ??", "Meet BMON ??"],
-      ["Meet BMON ?? Your new AI-Powered Digital Marketing Specialist,", "Meet BMON ?? Your AI-powered local growth team."],
-      ["Your AI-Powered Digital Marketing Specialist", "Website Design | AI Implementation | Automations | SEO"],
-      ["who works tirelessly so you don’t have to.", "Website Design | AI Implementation | Automations | SEO | AI Conversation Bot | Social Media Management | Ad Campaigns"],
+      ["Meet BMON ?? Your new AI-Powered Digital Marketing Specialist,", "Meet BMON ?? Your done-for-you local growth team."],
+      ["Your AI-Powered Digital Marketing Specialist", "Website Design • Local SEO • AI Automations • Reviews • Social & Ads"],
+      ["who works tirelessly so you don’t have to.", "Strategy + execution—built for local businesses."],
       ["Your AI-Powered Digital Marketing Specialist, who works tirelessly so you don’t have to.", "Website Design, SEO, and AI automations that get you booked—without the busywork."],
       ["Start My Free Trial", "Book a Free Strategy Call"],
       ["Start Free Trial", "Book a Free Strategy Call"],
       ["Start free trial", "Book a Free Strategy Call"],
       ["Book My Free Demo", "Book a Free Strategy Call"],
-      ["Log in", "Book a Call"],
-      ["Login", "Book a Call"],
-      ["Sign in", "Book a Call"],
-      ["Sign In", "Book a Call"],
-      ["Try Essential free", "Get Started"],
-      ["Try Premium free", "Get Started"],
-      ["Try Ultimate free", "Get Started"],
-      ["Pricing", "Services"],
+      ["Book a demo", "Book a Free Strategy Call"],
+      ["Book a Call", "Book a Free Strategy Call"],
+      ["Log in", "Book a Free Strategy Call"],
+      ["Login", "Book a Free Strategy Call"],
+      ["Sign in", "Book a Free Strategy Call"],
+      ["Sign In", "Book a Free Strategy Call"],
+      ["Try Essential free", "Book a Free Strategy Call"],
+      ["Try Premium free", "Book a Free Strategy Call"],
+      ["Try Ultimate free", "Book a Free Strategy Call"],
       ["Ready to attract more customers?", "Ready to get more booked appointments?"],
       [
         "Get started today or book a free demo to see how BMON can help you grow your business.",
