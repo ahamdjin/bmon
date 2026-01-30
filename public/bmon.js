@@ -7,6 +7,93 @@
   const EMBED_SCRIPT_SRC = "https://links.bmon.ai/js/form_embed.js";
   const ATTRIB_KEY = "bmon_attrib";
 
+  /* --------------------------- Brand guard --------------------------- */
+
+  function normalizeBrandInElement(root) {
+    if (!(root instanceof Element)) return;
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const value = node?.nodeValue;
+        if (!value) return NodeFilter.FILTER_REJECT;
+        if (!/\bmadison\b/i.test(value)) return NodeFilter.FILTER_REJECT;
+
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        const tag = parent.tagName;
+        if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+
+    for (const textNode of nodes) {
+      const original = textNode.nodeValue;
+      if (!original) continue;
+      const next = original.replace(/\bmadison\b/gi, "BMON");
+      if (next !== original) textNode.nodeValue = next;
+    }
+
+    root.querySelectorAll("img[alt]").forEach((img) => {
+      const alt = img.getAttribute("alt");
+      if (!alt || !/\bmadison\b/i.test(alt)) return;
+      img.setAttribute("alt", alt.replace(/\bmadison\b/gi, "BMON"));
+    });
+  }
+
+  function startBrandGuard() {
+    const html = document.documentElement;
+    if (!html || html.hasAttribute("data-bmon-brand-guard")) return;
+    html.setAttribute("data-bmon-brand-guard", "1");
+
+    const run = () => {
+      normalizeBrandInElement(document.body || document.documentElement);
+    };
+
+    // Initial pass as early as possible.
+    run();
+
+    const schedule = debounce(run, 0);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === "characterData") {
+          const value = m.target?.nodeValue;
+          if (typeof value === "string" && /\bmadison\b/i.test(value)) {
+            schedule();
+            return;
+          }
+        }
+        if (m.type === "childList") {
+          for (const n of m.addedNodes) {
+            if (n.nodeType === Node.TEXT_NODE) {
+              const value = n.nodeValue;
+              if (typeof value === "string" && /\bmadison\b/i.test(value)) {
+                schedule();
+                return;
+              }
+            } else if (n.nodeType === Node.ELEMENT_NODE) {
+              const el = n;
+              if (el instanceof Element && /\bmadison\b/i.test(el.textContent || "")) {
+                schedule();
+                return;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
+  }
+
   function getPathname() {
     const p = (window.location.pathname || "/").replace(/\/+$/, "");
     return p || "/";
@@ -598,6 +685,7 @@
   /* ------------------------------ Boot ------------------------------- */
 
   function boot() {
+    startBrandGuard();
     setPageAttr();
     initModal();
     initBookingEmbed();
