@@ -1,0 +1,455 @@
+/* Shared overrides for Framer-exported BMON pages */
+
+/* --- Ambient background --- */
+html,
+body {
+  background-color: #fff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    --bmon-ambient-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  body {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(800px 520px at 10% 10%, rgba(79, 70, 229, 0.085) 0%, rgba(79, 70, 229, 0) 60%),
+      radial-gradient(760px 520px at 95% 18%, rgba(14, 165, 233, 0.06) 0%, rgba(14, 165, 233, 0) 62%),
+      radial-gradient(880px 720px at 60% 115%, rgba(99, 102, 241, 0.055) 0%, rgba(99, 102, 241, 0) 65%),
+      #fff;
+    background-attachment: fixed;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20vmax;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.9;
+    filter: blur(44px) saturate(1.12);
+    background:
+      radial-gradient(42% 42% at 18% 18%, rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0) 70%),
+      radial-gradient(40% 40% at 82% 28%, rgba(99, 102, 241, 0.055) 0%, rgba(99, 102, 241, 0) 72%),
+      radial-gradient(46% 46% at 55% 88%, rgba(14, 165, 233, 0.045) 0%, rgba(14, 165, 233, 0) 72%);
+    transform: translate3d(-2%, -1%, 0) scale(1);
+    animation: bmon-ambient-drift 18s var(--bmon-ambient-ease) infinite alternate;
+  }
+
+  @keyframes bmon-ambient-drift {
+    0% {
+      transform: translate3d(-2%, -1%, 0) scale(1);
+    }
+    100% {
+      transform: translate3d(2%, 1.5%, 0) scale(1.02);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    display: none;
+  }
+}
+
+/* --- Button interactions --- */
+:root {
+  --bmon-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --bmon-hover-translate: -2px;
+  --bmon-hover-scale: 1.02;
+  --bmon-press-translate: 1px;
+  --bmon-press-scale: 0.985;
+  --bmon-shadow-hover: 0 12px 28px rgba(17, 17, 17, 0.14);
+  --bmon-shadow-press: 0 8px 18px rgba(17, 17, 17, 0.14);
+  --bmon-focus-ring: rgba(79, 70, 229, 0.52);
+}
+
+a[data-highlight="true"],
+button[data-highlight="true"] {
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0) scale(1);
+  z-index: 0;
+  --bmon-border-inset: 0 0 0 0 transparent;
+  transition:
+    transform 160ms var(--bmon-ease),
+    filter 160ms var(--bmon-ease),
+    box-shadow 220ms var(--bmon-ease);
+  will-change: transform;
+  box-shadow: var(--bmon-border-inset);
+  position: relative;
+  isolation: isolate;
+}
+
+a[data-highlight="true"]::after,
+button[data-highlight="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background:
+    radial-gradient(80% 90% at 20% 0%, rgba(79, 70, 229, 0.18) 0%, rgba(79, 70, 229, 0) 60%),
+    radial-gradient(70% 80% at 80% 100%, rgba(79, 70, 229, 0.14) 0%, rgba(79, 70, 229, 0) 65%);
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 220ms var(--bmon-ease);
+  pointer-events: none;
+  z-index: -1;
+}
+
+a[data-highlight="true"]:hover,
+button[data-highlight="true"]:hover {
+  z-index: 5;
+  transform: translate3d(0, var(--bmon-hover-translate), 0) scale(var(--bmon-hover-scale));
+  filter: saturate(1.02);
+  box-shadow: var(--bmon-shadow-hover), var(--bmon-border-inset);
+}
+
+a[data-highlight="true"]:hover::after,
+button[data-highlight="true"]:hover::after {
+  opacity: 1;
+}
+
+a[data-highlight="true"]:active,
+button[data-highlight="true"]:active {
+  z-index: 5;
+  transform: translate3d(0, var(--bmon-press-translate), 0) scale(var(--bmon-press-scale));
+  box-shadow: var(--bmon-shadow-press), var(--bmon-border-inset);
+}
+
+a[data-highlight="true"]:active::after,
+button[data-highlight="true"]:active::after {
+  opacity: 0.65;
+}
+
+a[data-highlight="true"]:focus-visible,
+button[data-highlight="true"]:focus-visible {
+  outline: 2px solid var(--bmon-focus-ring);
+  outline-offset: 4px;
+}
+
+/* White CTA needs a clearer edge on white backgrounds */
+[data-framer-name="WhiteChevron"][data-highlight="true"] {
+  --bmon-border-inset: 0 0 0 1px rgba(22, 21, 37, 0.16) inset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a[data-highlight="true"],
+  button[data-highlight="true"] {
+    transition: none;
+  }
+
+  a[data-highlight="true"]:hover,
+  a[data-highlight="true"]:active,
+  button[data-highlight="true"]:hover,
+  button[data-highlight="true"]:active {
+    transform: none;
+    filter: none;
+    box-shadow: none;
+  }
+}
+
+/* --- CTA z-index + modal --- */
+[data-bmon-cta-stack="1"] {
+  position: relative !important;
+  z-index: 2147480 !important;
+  overflow: visible !important;
+}
+
+[data-framer-name="Header"] {
+  z-index: 2147482000 !important;
+}
+
+/* Framer portals (video overlays, etc.) must sit above elevated CTA stacks */
+#overlay {
+  z-index: 2147483600 !important;
+}
+
+#overlay > * {
+  z-index: 2147483600 !important;
+}
+
+.bmon-footer-contact {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 16px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(24, 28, 57, 0.78);
+}
+
+.bmon-footer-contact a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bmon-footer-contact__sep {
+  opacity: 0.55;
+}
+
+.bmon-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: none;
+}
+
+.bmon-modal[data-open="true"] {
+  display: block;
+}
+
+.bmon-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 14, 0.58);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bmon-modal[data-open="true"] .bmon-modal__backdrop {
+  opacity: 1;
+}
+
+.bmon-modal__wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.bmon-modal__card {
+  width: min(920px, calc(100vw - 36px));
+  max-height: calc(100dvh - 36px);
+  overflow: hidden;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+  transform: translate3d(0, 10px, 0) scale(0.985);
+  opacity: 0;
+  transition:
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bmon-modal[data-open="true"] .bmon-modal__card {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.bmon-modal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgba(22, 21, 37, 0.12);
+}
+
+.bmon-modal__title {
+  margin: 0;
+  font: 650 16px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: rgba(22, 21, 37, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.bmon-modal__close {
+  appearance: none;
+  border: 0;
+  background: rgba(22, 21, 37, 0.06);
+  color: rgba(22, 21, 37, 0.86);
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    transform 120ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bmon-modal__close:hover {
+  transform: translateY(-1px);
+  background: rgba(22, 21, 37, 0.09);
+}
+
+.bmon-modal__close:active {
+  transform: translateY(0);
+}
+
+.bmon-modal__close:focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.55);
+  outline-offset: 3px;
+}
+
+.bmon-modal__body {
+  padding: 0;
+  background: #fff;
+}
+
+.bmon-modal__iframe {
+  width: 100%;
+  height: min(82dvh, 920px);
+  border: 0;
+  display: block;
+  background: #fff;
+}
+
+@media (max-width: 767.98px) {
+  .bmon-modal__iframe {
+    height: min(86dvh, 1200px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bmon-modal__backdrop,
+  .bmon-modal__card {
+    transition: none;
+  }
+}
+
+/* --- Booking embed (default pages) --- */
+#book-demo {
+  --bmon-booking-min-height: 980px;
+}
+
+#book-demo .framer-1drel74 {
+  height: auto !important;
+  min-height: var(--bmon-booking-min-height);
+  overflow: visible !important;
+}
+
+#book-demo .framer-xi24iv-container {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.bmon-booking-embed {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.bmon-booking-embed iframe {
+  display: block;
+  width: 100%;
+  min-height: var(--bmon-booking-min-height, 980px);
+  border: 0;
+  overflow: auto;
+}
+
+@media (max-width: 767.98px) {
+  #book-demo {
+    --bmon-booking-min-height: 1200px;
+  }
+}
+
+/* --- GoHighLevel page: contact + booking layout --- */
+html[data-bmon-page="gohighlevel"] #book-demo {
+  --bmon-contact-form-height: 545px;
+  --bmon-contact-booking-height: clamp(760px, 82vh, 980px);
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .framer-1drel74 {
+  height: auto !important;
+  min-height: calc(
+    var(--bmon-contact-form-height) + var(--bmon-contact-booking-height) + 220px
+  );
+  overflow: visible !important;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .framer-xi24iv-container {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .contact-section {
+  width: 100%;
+  padding: 28px 22px;
+  border-radius: 24px;
+  background: #fff;
+  color: var(--token-43ca2235-b13c-48fc-9fa1-73e07cf0efa7, #161525);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  container-type: inline-size;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .bmon-support {
+  margin: -6px 0 18px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(22, 21, 37, 0.78);
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .bmon-support a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@container (min-width: 920px) {
+  html[data-bmon-page="gohighlevel"] #book-demo .contact-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .contact-form h3,
+html[data-bmon-page="gohighlevel"] #book-demo .calendar-embed h3 {
+  margin: 0 0 12px;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .contact-form iframe,
+html[data-bmon-page="gohighlevel"] #book-demo .calendar-embed iframe {
+  display: block;
+  width: 100%;
+  border: none;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .contact-form iframe {
+  min-height: var(--bmon-contact-form-height);
+  height: var(--bmon-contact-form-height);
+  border-radius: 3px;
+}
+
+html[data-bmon-page="gohighlevel"] #book-demo .calendar-embed iframe {
+  height: var(--bmon-contact-booking-height) !important;
+  max-height: var(--bmon-contact-booking-height) !important;
+  border-radius: 3px;
+  overflow: auto;
+}
+
+@media (max-width: 767.98px) {
+  html[data-bmon-page="gohighlevel"] #book-demo {
+    --bmon-contact-booking-height: clamp(920px, 86vh, 1200px);
+  }
+
+  html[data-bmon-page="gohighlevel"] #book-demo .contact-section {
+    padding: 22px 16px;
+    border-radius: 18px;
+  }
+
+  html[data-bmon-page="gohighlevel"] #book-demo .framer-xi24iv-container {
+    max-width: 100%;
+  }
+}
+
