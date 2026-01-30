@@ -89,7 +89,7 @@ function transformHtml(html) {
   let out = html;
 
   // Replace any leftover template branding/copy before first paint (prevents “flash”).
-  out = out.replace(/\bMadison\b/g, "BMON");
+  out = out.replace(/\bmadison\b/gi, "BMON");
 
   for (const [from, to] of TEXT_REPLACEMENTS) {
     out = out.split(from).join(to);
